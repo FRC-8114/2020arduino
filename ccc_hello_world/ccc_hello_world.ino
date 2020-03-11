@@ -21,15 +21,19 @@
 //
   
 #include <Pixy2.h>
+#include <SPI.h>
+#include <stdlib.h>
 
 // This is the main Pixy object 
 Pixy2 pixy;
+double axis_x, axis_y, pixel_x, pixel_y, distance;
+double blocks[200];
+Block largestBlock;
 
 void setup()
 {
   Serial.begin(115200);
   Serial.print("Starting...\n");
-  
   pixy.init();
 }
 
@@ -63,26 +67,43 @@ void loop()
   for (int x = i; x <= pixy.ccc.numBlocks; x++) {
     pixy.ccc.blocks[i].print();
   }
+
+  
   // Ax = Axis X, Ay = Axis Y, Px = Pixel X, Py = Pixel Y, Rx = Resolution X, Ry = Resolution Y
+  // Ax = , Ay = , Px = , Py = , Rx = 316, Ry = 208
   // Ax = (Px-Rx/2)/(Rx/2);
   // Ay = (Py-Ry/2)/(Ry/2);
-  /*
-  int i; 
-  // grab blocks!
-  pixy.ccc.getBlocks();
-  
-  // If there are detect blocks, print them!
-  if (pixy.ccc.numBlocks)
-  {
-    Serial.print("Detected ");
-    Serial.println(pixy.ccc.numBlocks);
-    for (i=0; i<pixy.ccc.numBlocks; i++)
-    {
-      Serial.print("  block ");
-      Serial.print(i);
-      Serial.print(": ");
-      pixy.ccc.blocks[i].print();
+  // 39 inches wide, 29 tall
+}
+
+Block getBiggestBlock()
+{
+  int blockCount = pixy.ccc.getBlocks();
+  largestBlock = pixy.ccc.blocks[0];
+  for (int i = 0; i <= blockCount; i++) {
+    if (pixy.ccc.blocks[i].m_signature == 1) {
+      if (largestBlock.m_width < pixy.ccc.blocks[i].m_width)
+        largestBlock = pixy.ccc.blocks[i];
     }
-  }  
-  */
+  }
+  return largestBlock;
+}
+
+double getBiggestX()
+{
+  return largestBlock.m_x;
+}
+
+double getBiggestY()
+{
+  return largestBlock.m_y;
+}
+
+double getDistance()
+{
+  pixel_x = getBiggestX();
+  pixel_y = getBiggestY();
+  axis_x = (pixel_x - (316/2)) / (316/2);
+  axis_y = (pixel_y - (208/2)) / (208/2);
+  distance = ((38 + 9/16) * largestBlock.m_width) / (2 * (39/12 * 1152.0001451339) * tan(largestBlock.m_angle));
 }
