@@ -33,8 +33,40 @@ void setup()
   pixy.init();
 }
 
+void lampOn()
+{
+  pixy.setLamp((byte) 1, (byte) 1);
+}
+
+void lampOff()
+{
+  pixy.setLamp((byte) 0, (byte) 0);
+}
+
+void LEDOn() 
+{
+  pixy.setLED(100,100,100);
+}
+
+void LEDOff() 
+{
+  pixy.setLED(0,0,0);
+}
+
 void loop()
 { 
+  int i = pixy.ccc.getBlocks();
+  if (i > 0) {
+    lampOff();
+    lampOn();
+  }
+  for (int x = i; x <= pixy.ccc.numBlocks; x++) {
+    pixy.ccc.blocks[i].print();
+  }
+  // Ax = Axis X, Ay = Axis Y, Px = Pixel X, Py = Pixel Y, Rx = Resolution X, Ry = Resolution Y
+  // Ax = (Px-Rx/2)/(Rx/2);
+  // Ay = (Py-Ry/2)/(Ry/2);
+  /*
   int i; 
   // grab blocks!
   pixy.ccc.getBlocks();
@@ -52,4 +84,5 @@ void loop()
       pixy.ccc.blocks[i].print();
     }
   }  
+  */
 }
